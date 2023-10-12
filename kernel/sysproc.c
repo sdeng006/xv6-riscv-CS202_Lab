@@ -89,3 +89,12 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_info(void)
+{
+  
+  // lab1 part1
+
+  return 0;
+}
