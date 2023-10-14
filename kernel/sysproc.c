@@ -98,3 +98,12 @@ sys_info(void)
 
   return 0;
 }
+
+uint64
+sys_procinfo(void)
+{
+  
+  // lab1 part2
+
+  return 0;
+}
