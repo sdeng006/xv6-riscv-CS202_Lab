@@ -14,7 +14,7 @@ struct proc *initproc;
 
 int nextpid = 1;
 struct spinlock pid_lock;
-
+int count = 0; 
 extern void forkret(void);
 static void freeproc(struct proc *p);
 
@@ -692,7 +692,7 @@ void get_sys_procinfo()
 
   struct pinfo p1; 
   p1.ppid = getpid();
-  // p1.syscall_count = 
+  p1.syscall_count = count;
 
   return p1;
 }

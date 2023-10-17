@@ -102,8 +102,9 @@ sys_info(void)
 uint64
 sys_procinfo(void) 
 {
+    
   
- //lab1 part2
+ get_sys_procinfo();
 
 
   return 0;
