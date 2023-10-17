@@ -103,9 +103,13 @@ uint64
 sys_procinfo(void) 
 {
   float ppid; 
-  int sys_call_count; 
+  int sys_call_count;
+  float page_usage; 
   ppid = getppid();
   sys_call_count = get_sys_calls_count(); 
-  
+
+  struct proc *curproc = myproc();
+  uint sz_aligned = PGROUNDUP(curproc->sz);
+  page_usage = sz_aligned / PGSIZE; // Calculate the memory usage in terms of pages
   return 0;
 }
