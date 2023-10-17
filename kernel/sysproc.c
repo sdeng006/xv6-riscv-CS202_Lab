@@ -100,10 +100,11 @@ sys_info(void)
 }
 
 uint64
-sys_procinfo(void)
+sys_procinfo(void) 
 {
   
-  // lab1 part2
+ //lab1 part2
+
 
   return 0;
 }
