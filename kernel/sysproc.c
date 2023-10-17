@@ -99,8 +99,14 @@ sys_info(void)
   return 0;
 }
 
+struct pinfo {
+    int ppid;
+    int syscall_count; 
+    int page_useage;
+};
+
 uint64
-sys_procinfo(void) 
+sys_procinfo(struct pinfo *p) 
 {
   float ppid; 
   int sys_call_count;
