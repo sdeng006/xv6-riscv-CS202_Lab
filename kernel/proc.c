@@ -681,18 +681,3 @@ procdump(void)
     printf("\n");
   }
 }
-
-void get_sys_procinfo()
-{
-  struct pinfo{ 
-    int ppid; 
-    int syscall_count; 
-    int page_useage;
-  };
-
-  struct pinfo p1; 
-  p1.ppid = getpid();
-  p1.syscall_count = count;
-
-  return p1;
-}

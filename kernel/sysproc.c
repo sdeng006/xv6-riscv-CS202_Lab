@@ -102,10 +102,10 @@ sys_info(void)
 uint64
 sys_procinfo(void) 
 {
-    
+  float ppid; 
+  int sys_call_count; 
+  ppid = getppid();
+  sys_call_count = get_sys_calls_count(); 
   
- get_sys_procinfo();
-
-
   return 0;
 }
