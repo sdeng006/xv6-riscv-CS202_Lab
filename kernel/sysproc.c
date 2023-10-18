@@ -118,7 +118,6 @@ sys_procinfo(struct pinfo *p)
   uint sz_aligned = PGROUNDUP(curproc->sz);
   page_usage = sz_aligned / PGSIZE; // Calculate the memory usage in terms of pages
 
-  // return 0 if successful else return -1
   if (!p)
   {
     return -1;
