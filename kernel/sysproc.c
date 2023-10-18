@@ -95,8 +95,7 @@ sys_info(void) // sysinfo syscall definition
 {
   int n;
   argint(0, &n);
-  show_info(n);
-  return 0;
+  return show_info(n);
 }
 
 struct pinfo {

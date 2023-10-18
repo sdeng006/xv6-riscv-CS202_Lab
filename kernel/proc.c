@@ -694,11 +694,26 @@ int show_info(int param)
 
   if (param == 0)
   {
+    struct proc *p;
+    ret = 0;
 
+    //acquire(&p->lock);
+    for(p = proc; p < &proc[NPROC]; p++)
+    {
+      acquire(&p->lock);
+      
+      if(p->state == RUNNABLE || p->state == RUNNING || p->state == SLEEPING || p->state == ZOMBIE)
+      {
+        ret++;
+      }
+
+      release(&p->lock);
+    }
+    //release(&p->lock);
   }
   else if (param == 1)
   {
-
+    
   }
   else if (param == 2)
   {
