@@ -686,3 +686,28 @@ int get_sys_calls_count(void)
 {
   return count; 
 }
+
+// sysinfo: printing selected info
+int show_info(int param)
+{
+  int ret = -1;
+
+  if (param == 0)
+  {
+
+  }
+  else if (param == 1)
+  {
+
+  }
+  else if (param == 2)
+  {
+    ret = kfree_mem_page_number();
+  }
+  else
+  {
+    exit(-1);
+  }
+
+  return ret;
+}

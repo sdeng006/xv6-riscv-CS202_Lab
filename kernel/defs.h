@@ -63,6 +63,7 @@ void            ramdiskrw(struct buf*);
 void*           kalloc(void);
 void            kfree(void *);
 void            kinit(void);
+int             kfree_mem_page_number(void);
 
 // log.c
 void            initlog(int, struct superblock*);
@@ -107,7 +108,7 @@ int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 int             get_sys_calls_count(void); 
-uint64          sys_info(void);
+int             show_info(int); // sysinfo
 int             sys_procinfo(struct p*);
 
 // swtch.S

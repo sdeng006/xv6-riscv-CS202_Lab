@@ -91,11 +91,11 @@ sys_uptime(void)
 }
 
 uint64
-sys_info(void)
+sys_info(void) // sysinfo syscall definition
 {
-  
-  // lab1 part1
-
+  int n;
+  argint(0, &n);
+  show_info(n);
   return 0;
 }
 
