@@ -681,3 +681,8 @@ procdump(void)
     printf("\n");
   }
 }
+
+int get_sys_calls_count(void)
+{
+  return count; 
+}

@@ -37,3 +37,5 @@ entry("sbrk");
 entry("sleep");
 entry("uptime");
 entry("info");
+entry("sys_info");
+entry("sys_procinfo")

@@ -105,7 +105,7 @@ struct pinfo {
     int page_useage;
 };
 
-uint64
+int
 sys_procinfo(struct pinfo *p) 
 {
   float ppid; 
@@ -117,5 +117,7 @@ sys_procinfo(struct pinfo *p)
   struct proc *curproc = myproc();
   uint sz_aligned = PGROUNDUP(curproc->sz);
   page_usage = sz_aligned / PGSIZE; // Calculate the memory usage in terms of pages
+
+  
   return 0;
 }

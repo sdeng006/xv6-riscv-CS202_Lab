@@ -105,8 +105,3 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
 };
-
-int get_sys_calls_count(void)
-{
-  return count; 
-}
