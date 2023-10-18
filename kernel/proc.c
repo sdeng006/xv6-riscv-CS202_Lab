@@ -14,7 +14,7 @@ struct proc *initproc;
 
 int nextpid = 1;
 struct spinlock pid_lock;
-int count = 0; 
+int sys_call_count = 0; 
 extern void forkret(void);
 static void freeproc(struct proc *p);
 
@@ -684,7 +684,7 @@ procdump(void)
 
 int get_sys_calls_count(void)
 {
-  return count; 
+  return sys_call_count; 
 }
 
 // sysinfo: printing selected info

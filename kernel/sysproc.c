@@ -102,28 +102,29 @@ sys_info(void) // sysinfo syscall definition
 struct pinfo {
     int ppid;
     int syscall_count; 
-    int page_useage;
+    int page_usage;
 };
 
-int
-sys_procinfo(struct pinfo *p) 
+uint64
+sys_procinfo(struct pinfo *p)
 {
-  float ppid; 
-  int sys_call_count;
-  float page_usage; 
-  ppid = getppid();
-  sys_call_count = get_sys_calls_count(); 
-
   struct proc *curproc = myproc();
-  uint sz_aligned = PGROUNDUP(curproc->sz);
-  page_usage = sz_aligned / PGSIZE; // Calculate the memory usage in terms of pages
 
-  if (!p)
-  {
+
+  p->ppid = curproc->parent->pid;
+  p->syscall_count = get_sys_calls_count(); //not yet done
+
+  uint sz_aligned = PGROUNDUP(curproc->sz);
+  p->page_usage = sz_aligned / PGSIZE;
+  
+  if (copyout(curproc->pagetable, (uint64)p, (char *)&p->ppid, sizeof(int)) < 0)
     return -1;
-  }
-  else
-  {
-    return 0;
-  }
+  if (copyout(curproc->pagetable, (uint64)p + sizeof(int), (char *)&p->syscall_count, sizeof(int)) < 0)
+    return -1;
+  if (copyout(curproc->pagetable, (uint64)p + 2 * sizeof(int), (char *)&p->page_usage, sizeof(int)) < 0)
+    return -1;
+
+
+  return 0;
+
 }

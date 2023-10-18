@@ -24,8 +24,8 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int info(int);
-uint64 sys_info(void); 
-int procinfo(struct*)
+int sysinfo(int);
+int procinfo(struct pinfo*);
 
 // ulib.c
 int stat(const char*, struct stat*);

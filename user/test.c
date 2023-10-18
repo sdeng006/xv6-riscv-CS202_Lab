@@ -1,6 +1,7 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
+// # include <stddef.h>
 
 #define MAX_PROC 10
 struct pinfo {
@@ -26,17 +27,21 @@ int main(int argc, char *argv[])
   if (argc < 3) {
     printf("Usage: %s [MEM] [N_PROC]\n", argv[0]);
     exit(-1);
-}
+  }
   mem = atoi(argv[1]);
   n_proc = atoi(argv[2]);
   if (n_proc > MAX_PROC) {
     printf("Cannot test with more than %d processes\n", MAX_PROC);
     exit(-1);
-}
-  //print_sysinfo();
+  }
+  // print_sysinfo();
   for (int i = 0; i < n_proc; i++) {
-    sleep(1);
+    // sleep(1);
+    //printf("1pid is %d", getpid());
     ret = fork();
+    printf("fork number is  %d", fork);
+    //printf("2pid is %d", getpid());
+    //printf("No problem here! ");
     if (ret == 0) { // child process
       struct pinfo param;
       malloc(mem); // this triggers a syscall
@@ -44,6 +49,9 @@ int main(int argc, char *argv[])
         procinfo(&param); // calls 10 times
       printf("[procinfo %d] ppid: %d, syscalls: %d, page usage: %d\n",
         getpid(), param.ppid, param.syscall_count, param.page_usage);
+      //printf("3pid is %d", getpid());
+
+      //exit(-1);
       while (1);
     }
     else { // parent
@@ -53,9 +61,7 @@ int main(int argc, char *argv[])
   }
 
   sleep(1);
-  //print_sysinfo();
+  // print_sysinfo();
   for (int i = 0; i < n_proc; i++) kill(proc_pid[i]);
   exit(0);
 }
-
-

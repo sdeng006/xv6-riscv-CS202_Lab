@@ -107,9 +107,8 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
-int             get_sys_calls_count(void); 
+int             get_sys_calls_count(void); //get system calls count 
 int             show_info(int); // sysinfo
-int             sys_procinfo(struct p*);
 
 // swtch.S
 void            swtch(struct context*, struct context*);
