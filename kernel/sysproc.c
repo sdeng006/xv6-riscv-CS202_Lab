@@ -119,7 +119,7 @@ sys_procinfo(struct pinfo *p)
   page_usage = sz_aligned / PGSIZE; // Calculate the memory usage in terms of pages
 
   // return 0 if successful else return -1
-  if (*p )
+  if (!p)
   {
     return 0;
   }
