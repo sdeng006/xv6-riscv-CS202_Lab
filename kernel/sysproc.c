@@ -121,10 +121,10 @@ sys_procinfo(struct pinfo *p)
   // return 0 if successful else return -1
   if (!p)
   {
-    return 0;
+    return -1;
   }
   else
   {
-    return -1;
+    return 0;
   }
 }
