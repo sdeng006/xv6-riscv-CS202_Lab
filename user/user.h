@@ -1,4 +1,5 @@
 struct stat;
+struct pinfo; 
 
 // system calls
 int fork(void);
@@ -22,8 +23,14 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+<<<<<<< Updated upstream
 int info(int); // sysinfo
 int sys_procinfo(struct*)
+=======
+int info(int);
+uint64 sys_info(void); 
+int procinfo(struct*)
+>>>>>>> Stashed changes
 
 // ulib.c
 int stat(const char*, struct stat*);
