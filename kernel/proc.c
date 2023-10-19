@@ -15,6 +15,7 @@ struct proc *initproc;
 int nextpid = 1;
 struct spinlock pid_lock;
 int sys_call_count = 0; 
+int p_sys_call_count = 0;
 extern void forkret(void);
 static void freeproc(struct proc *p);
 
@@ -124,6 +125,9 @@ allocproc(void)
 found:
   p->pid = allocpid();
   p->state = USED;
+  
+  // initialized new per-process data
+  p_sys_call_count = 0;
 
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
@@ -682,13 +686,15 @@ procdump(void)
   }
 }
 
-int get_sys_calls_count(void)
+int
+get_sys_calls_count(void)
 {
   return sys_call_count; 
 }
 
 // sysinfo: printing selected info
-int show_info(int param)
+int
+show_info(int param)
 {
   int ret = -1;
 
@@ -721,4 +727,22 @@ int show_info(int param)
   }
 
   return ret;
+}
+
+int
+procinfo(void)
+{
+  uint64 ptr;
+  argaddr(0, &ptr);
+
+  struct proc* p = myproc();
+  int page_count = p->sz/PGSIZE;
+  if(p->sz % PGSIZE != 0) page_count++;
+
+  uint32 data[3]; 
+  data[0] = p->parent->pid; // ppid
+  data[1] = p_sys_call_count - 1; // syscall_count
+  data[2] = page_count; // page_usage
+
+  return copyout(p->pagetable, ptr, (char*)data, sizeof(uint32)*3);
 }

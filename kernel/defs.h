@@ -109,6 +109,7 @@ int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
 int             get_sys_calls_count(void); //get system calls count 
 int             show_info(int); // sysinfo
+int             procinfo(void); // procinfo				
 
 // swtch.S
 void            swtch(struct context*, struct context*);
