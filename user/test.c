@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     //printf("2pid is %d", getpid());
     //printf("No problem here! ");
     if (ret == 0) { // child process
+      printf("inside if");
       struct pinfo param;
       malloc(mem); // this triggers a syscall
       for (int j = 0; j < 10; j++)
@@ -65,3 +66,4 @@ int main(int argc, char *argv[])
   for (int i = 0; i < n_proc; i++) kill(proc_pid[i]);
   exit(0);
 }
+
