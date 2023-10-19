@@ -732,17 +732,22 @@ show_info(int param)
 int
 procinfo(void)
 {
-  uint64 ptr;
-  argaddr(0, &ptr);
-
-  struct proc* p = myproc();
-  int page_count = p->sz/PGSIZE;
-  if(p->sz % PGSIZE != 0) page_count++;
-
-  uint32 data[3]; 
-  data[0] = p->parent->pid; // ppid
-  data[1] = p_sys_call_count - 1; // syscall_count
-  data[2] = page_count; // page_usage
-
-  return copyout(p->pagetable, ptr, (char*)data, sizeof(uint32)*3);
+  uint64 user_space_pointer;
+  argaddr(0, &user_space_pointer);
+  uint32 ppid, syscall_count, page_usage;
+  struct proc* curproc = myproc();
+  // Get parent PID of curent process
+  ppid = curproc->parent->pid;
+  // Get the sys calls number of curent process
+  syscall_count = p_sys_call_count - 1;
+  // Calculate the page usage
+  page_usage =  PGROUNDUP(curproc->sz) / PGSIZE;
+  // Copy data from kernel space to user space
+  if(copyout(curproc->pagetable, user_space_pointer, (char*)&ppid, sizeof(uint32)) < 0 ||
+     copyout(curproc->pagetable, user_space_pointer + sizeof(uint32), (char*)&syscall_count, sizeof(uint32)) < 0||
+     copyout(curproc->pagetable, user_space_pointer + 2 * sizeof(uint32), (char*)&page_usage, sizeof(uint32)) < 0)
+  {
+    return -1; //exception handling
+  }
+  return 0;
 }
