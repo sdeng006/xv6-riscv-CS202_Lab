@@ -24,7 +24,6 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int info(int);
-int sysinfo(int);
 int procinfo(struct pinfo*);
 
 // ulib.c

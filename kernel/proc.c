@@ -709,7 +709,7 @@ int show_info(int param)
   }
   else if (param == 1)
   {
-    ret = get_sys_calls_count();
+    ret = get_sys_calls_count() - 1;
   }
   else if (param == 2)
   {
