@@ -1,7 +1,6 @@
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
-// # include <stddef.h>
 
 #define MAX_PROC 10
 struct pinfo {
@@ -12,13 +11,13 @@ struct pinfo {
 
 void print_sysinfo(void)
 {
-  //int n_active_proc, n_syscalls, n_free_pages;
+  int n_active_proc, n_syscalls, n_free_pages;
 
-  //n_active_proc = sysinfo(0);
-  //n_syscalls = sysinfo(1);
-  //n_free_pages = sysinfo(2);
-  //printf("[sysinfo] active proc: %d, syscalls: %d, free pages: %d\n",
-  //n_active_proc, n_syscalls, n_free_pages);
+  n_active_proc = info(0);
+  n_syscalls = info(1);
+  n_free_pages = info(2);
+  printf("[sysinfo] active proc: %d, syscalls: %d, free pages: %d\n",
+  n_active_proc, n_syscalls, n_free_pages);
 }
 
 int main(int argc, char *argv[])
@@ -34,11 +33,10 @@ int main(int argc, char *argv[])
     printf("Cannot test with more than %d processes\n", MAX_PROC);
     exit(-1);
   }
-  // print_sysinfo();
+  print_sysinfo();
   for (int i = 0; i < n_proc; i++) {
     sleep(1);
     ret = fork();
-    // printf("fork number is  %d", fork);
 
     if (ret == 0) { // child process
       struct pinfo param;
@@ -58,7 +56,7 @@ int main(int argc, char *argv[])
   }
 
   sleep(1);
-  // print_sysinfo();
+  print_sysinfo();
   for (int i = 0; i < n_proc; i++) kill(proc_pid[i]);
   exit(0);
 }
