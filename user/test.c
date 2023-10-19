@@ -36,23 +36,19 @@ int main(int argc, char *argv[])
   }
   // print_sysinfo();
   for (int i = 0; i < n_proc; i++) {
-    // sleep(1);
-    //printf("1pid is %d", getpid());
+    sleep(1);
     ret = fork();
-    printf("fork number is  %d", fork);
-    //printf("2pid is %d", getpid());
-    //printf("No problem here! ");
+    // printf("fork number is  %d", fork);
+
     if (ret == 0) { // child process
-      printf("inside if");
       struct pinfo param;
       malloc(mem); // this triggers a syscall
       for (int j = 0; j < 10; j++)
         procinfo(&param); // calls 10 times
+      
       printf("[procinfo %d] ppid: %d, syscalls: %d, page usage: %d\n",
         getpid(), param.ppid, param.syscall_count, param.page_usage);
-      //printf("3pid is %d", getpid());
-
-      //exit(-1);
+      
       while (1);
     }
     else { // parent

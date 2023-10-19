@@ -104,26 +104,40 @@ struct pinfo {
     int page_usage;
 };
 
-uint64
-sys_procinfo(struct pinfo *p)
-{
-  struct proc *curproc = myproc();
+// uint64
+// sys_procinfo(struct pinfo *p)
+// {
+//   struct proc *curproc = myproc();
 
 
-  p->ppid = curproc->parent->pid;
-  p->syscall_count = get_sys_calls_count(); //not yet done
+//   p->ppid = curproc->parent->pid;
+//   p->syscall_count = get_sys_calls_count(); //not yet done
 
-  uint sz_aligned = PGROUNDUP(curproc->sz);
-  p->page_usage = sz_aligned / PGSIZE;
+//   uint sz_aligned = PGROUNDUP(curproc->sz);
+//   p->page_usage = sz_aligned / PGSIZE;
   
-  if (copyout(curproc->pagetable, (uint64)p, (char *)&p->ppid, sizeof(int)) < 0)
-    return -1;
-  if (copyout(curproc->pagetable, (uint64)p + sizeof(int), (char *)&p->syscall_count, sizeof(int)) < 0)
-    return -1;
-  if (copyout(curproc->pagetable, (uint64)p + 2 * sizeof(int), (char *)&p->page_usage, sizeof(int)) < 0)
-    return -1;
+//   if (copyout(curproc->pagetable, (uint64)p, (char *)&p->ppid, sizeof(int)) < 0)
+//     return -1;
+//   if (copyout(curproc->pagetable, (uint64)p + sizeof(int), (char *)&p->syscall_count, sizeof(int)) < 0)
+//     return -1;
+//   if (copyout(curproc->pagetable, (uint64)p + 2 * sizeof(int), (char *)&p->page_usage, sizeof(int)) < 0)
+//     return -1;
 
 
-  return 0;
+//   return 0;
 
+// }
+
+uint64 sys_procinfo(void){ 
+  uint64 ptr; 
+  argaddr(0, &ptr);
+  struct proc* p = myproc(); 
+
+  uint32 data[3]; 
+  data[0] = p->parent->pid;
+  data[1] = get_sys_calls_count(); 
+  int page_count = p->sz /4096; 
+  if(p->sz % 4096 != 0)page_count++;
+  data[2] = page_count; 
+  return copyout(p->pagetable, ptr, (char*)data, sizeof(uint32)*3);
 }
