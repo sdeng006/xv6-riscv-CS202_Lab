@@ -446,6 +446,17 @@ wait(uint64 addr)
 //  - swtch to start running that process.
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
+
+
+// pseudo random generator (https://stackoverflow.com/a/7603688)
+unsigned short lfsr = 0xACE1u;
+unsigned short bit;
+unsigned short rand(){
+  bit = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1;
+  return lfsr = (lfsr >> 1) | (bit << 15);
+}
+
+
 void
 scheduler(void)
 {
@@ -457,24 +468,65 @@ scheduler(void)
     // Avoid deadlock by ensuring that devices can interrupt.
     intr_on();
 
-    for(p = proc; p < &proc[NPROC]; p++) {
-      acquire(&p->lock);
-      if(p->state == RUNNABLE) {
-        // Increment ticks each time the process is about to run
-        p->ticks++;
-        // Switch to chosen process.  It is the process's job
-        // to release its lock and then reacquire it
-        // before jumping back to us.
-        p->state = RUNNING;
-        c->proc = p;
-        swtch(&c->context, &p->context);
-
-        // Process is done running for now.
-        // It should have changed its p->state before coming back.
-        c->proc = 0;
+    #if defined(LOTTERY) // Lottery scheduler logic
+      
+      // Calculate total tickets number
+      int total_tickets = 0;
+      for(p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
+        if(p->state == RUNNABLE)
+          total_tickets += p->tickets;
+        release(&p->lock);
       }
-      release(&p->lock);
-    }
+
+      if(total_tickets > 0){
+        unsigned short selected_ticket = rand() % total_tickets;
+        //printf("%d--%d//", selected_ticket, total_tickets);
+        int tickets_accumulate = 0;
+        for(p = proc; p < &proc[NPROC]; p++) {
+          acquire(&p->lock);
+          if(p->state == RUNNABLE) {
+            tickets_accumulate += p->tickets;
+            if(tickets_accumulate > selected_ticket){
+              p->ticks++;
+              p->state = RUNNING;
+              c->proc = p;
+              swtch(&c->context, &p->context);
+              c->proc = 0;
+              release(&p->lock);
+              break;
+            }
+          }
+          release(&p->lock);
+        }
+      }
+
+
+
+    #elif defined(STRIDE)
+
+    #else
+      for(p = proc; p < &proc[NPROC]; p++) {
+        
+        acquire(&p->lock);
+        if(p->state == RUNNABLE) {
+          // Switch to chosen process.  It is the process's job
+          // to release its lock and then reacquire it
+          // before jumping back to us.
+          p->state = RUNNING;
+          // Increment ticks each time the process is about to run
+          p->ticks++;
+          c->proc = p;
+          swtch(&c->context, &p->context);
+
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+        }
+        release(&p->lock);
+      }
+
+    #endif
   }
 }
 
