@@ -125,6 +125,11 @@ found:
   p->pid = allocpid();
   p->state = USED;
 
+  // Initialize the ticks and tickets
+  p->ticks = 0;         // Initialize the tick count to 0
+  p->tickets = 1;       // Initialize the ticket count to a default value, say 1
+
+
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -455,6 +460,8 @@ scheduler(void)
     for(p = proc; p < &proc[NPROC]; p++) {
       acquire(&p->lock);
       if(p->state == RUNNABLE) {
+        // Increment ticks each time the process is about to run
+        p->ticks++;
         // Switch to chosen process.  It is the process's job
         // to release its lock and then reacquire it
         // before jumping back to us.
@@ -680,4 +687,37 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+int
+sched_statistics(void)
+{
+    struct proc *p;
+
+    for(p = proc; p < &proc[NPROC]; p++){
+        acquire(&p->lock);
+        if(p->state != UNUSED) {
+            printf("%d (%s): tickets: %d, scheduled: %d\n", 
+                  p->pid, p->name, p->tickets, p->ticks);
+        }
+        release(&p->lock);
+    }
+
+    return 0;
+}
+
+int
+sched_tickets(int n)
+{
+    struct proc *p = myproc();
+
+    acquire(&p->lock);
+    if(n < 0 || n > 10000) {
+        release(&p->lock);
+        return -1;
+    }
+
+    p->tickets = n;
+    release(&p->lock);
+    return 0;
 }
