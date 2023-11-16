@@ -6,6 +6,8 @@
 #include "proc.h"
 #include "defs.h"
 
+#define STRIDE_K 10000
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -447,11 +449,12 @@ wait(uint64 addr)
 //  - eventually that process transfers control
 //    via swtch back to the scheduler.
 
-
+// ------ lab 2 ------ //
 // pseudo random generator (https://stackoverflow.com/a/7603688)
 unsigned short lfsr = 0xACE1u;
 unsigned short bit;
-unsigned short rand(){
+unsigned short 
+rand() {
   bit = ((lfsr >> 0) ^ (lfsr >> 2) ^ (lfsr >> 3) ^ (lfsr >> 5)) & 1;
   return lfsr = (lfsr >> 1) | (bit << 15);
 }
@@ -462,7 +465,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  
+
   c->proc = 0;
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
@@ -501,9 +504,43 @@ scheduler(void)
         }
       }
 
+    #elif defined(STRIDE) // Stride Scheduler
 
+      struct proc *min_stride_p = 0; 
+      int min = INT_MAX;
 
-    #elif defined(STRIDE)
+      for(p = proc; p < &proc[NPROC]; p++) {
+        acquire(&p->lock);
+	if(p->state == RUNNABLE) {
+	  // Find the min stride
+	  if(min > p->pass) {
+	    min_stride_p = p;
+	    min = p->pass;
+	  }
+	}
+	release(&p->lock);
+      }
+
+      // Switch to the min stride process
+      if(min != INT_MAX) {
+        acquire(&min_proc->lock);
+
+	// set the process from runnable to running
+	min_stride_p->state = RUNNING;
+	c->proc = min_stride_p;
+	
+	// update its pass and ticks
+	min_stride_p->ticks++;
+	min_stride_p->pass += min_stride_p->stride;
+
+	// Switch to the min stride process
+        swtch(&c->context, &min_stride_p->context);
+
+	// Process is done running for now
+	c->proc = 0;
+
+	release(&min_stride_p->lock);
+      }
 
     #else
       for(p = proc; p < &proc[NPROC]; p++) {
@@ -770,6 +807,12 @@ sched_tickets(int n)
     }
 
     p->tickets = n;
+
+#if defined(STRIDE)
+    p->stride = STRIDE_K / p->tickets;
+    p->pass = p->stride;
+#endif
+
     release(&p->lock);
     return 0;
 }
