@@ -11,6 +11,7 @@ int thread_create(void*(start_routinue)(void*), void *arg){
     else {
         return 0;
     }
+    return 0;
 }
 
 void lock_init(struct lock_t *lock){
