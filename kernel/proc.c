@@ -18,7 +18,7 @@ struct spinlock pid_lock;
 extern void forkret(void);
 static void freeproc(struct proc *p);
 // lab3
-static void freeproc_thread(struct proc *p);
+//static void freeproc_thread(struct proc *p);
 
 extern char trampoline[]; // trampoline.S
 
@@ -160,8 +160,14 @@ freeproc(struct proc *p)
   if(p->trapframe)
     kfree((void*)p->trapframe);
   p->trapframe = 0;
-  if(p->pagetable)
-    proc_freepagetable(p->pagetable, p->sz);
+  if(p->pagetable) {
+    if(p->thread_id == 0) {
+      proc_freepagetable(p->pagetable, p->sz);
+    }
+    else {
+      uvmunmap(p->pagetable, TRAPFRAME - PGSIZE * p->thread_id, 1, 0);
+    }
+  }
   p->pagetable = 0;
   p->sz = 0;
   p->pid = 0;
@@ -417,12 +423,12 @@ wait(uint64 addr)
             return -1;
           }
 
-          if(pp->thread_id == 0) {
+          // if(pp->thread_id == 0) {
             freeproc(pp);
-          }
-          else {
-            freeproc_thread(pp);
-          }
+          // }
+          // else {
+            // freeproc_thread(pp);
+          // }
 
           release(&pp->lock);
           release(&wait_lock);
@@ -692,24 +698,25 @@ procdump(void)
 }
 
 // lab3
-static void
-freeproc_thread(struct proc *p)
-{
-  if(p->trapframe)
-    kfree((void*)p->trapframe);
-  p->trapframe = 0;
-  if(p->pagetable)
-    uvmunmap(p->pagetable, TRAPFRAME - PGSIZE * p->thread_id, 1, 0);
-  p->pagetable = 0;
-  p->sz = 0;
-  p->pid = 0;
-  p->parent = 0;
-  p->name[0] = 0;
-  p->chan = 0;
-  p->killed = 0;
-  p->xstate = 0;
-  p->state = UNUSED;
-}
+// static void
+// freeprocthread(struct proc *p)
+// {
+//   if(p->trapframe)
+//     kfree((void*)p->trapframe);
+//   p->trapframe = 0;
+//   if(p->pagetable) {
+//     uvmunmap(p->pagetable, TRAPFRAME - PGSIZE * p->thread_id, 1, 0);
+//   }
+//   p->pagetable = 0;
+//   p->sz = 0;
+//   p->pid = 0;
+//   p->parent = 0;
+//   p->name[0] = 0;
+//   p->chan = 0;
+//   p->killed = 0;
+//   p->xstate = 0;
+//   p->state = UNUSED;
+// }
 
 static struct proc*
 allocproc_thread(struct proc* parent)
