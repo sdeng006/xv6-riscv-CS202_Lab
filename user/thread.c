@@ -12,18 +12,20 @@ int thread_create(void*(start_routinue)(void*), void *arg){
     }
 }
 
-int lock_init(volatile lock_t *lock){
+void lock_init(struct lock_t *lock){
     lock->locked = 0; 
-    return 0
+    return;
 }
 
-void lock_acquire(volatile lock_t *lock){
+void lock_acquire(struct lock_t *lock){
     while(1){
         if(xchg(&lock->locked, 1) ==0)
         break;
     }
+    return;
 }
 
-void lock_release(volatile lock_t *lock){ 
+void lock_release(struct lock_t *lock){ 
     xchg(&lock->locked,0); 
+    return;
 }
