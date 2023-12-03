@@ -1,5 +1,8 @@
+#include "kernel/types.h"
+#include "user/user.h"
+
 struct lock_t {
-uint locked; 
+    uint locked; 
 }; 
 
 int thread_create(void *(start_routine)(void*), void *arg);

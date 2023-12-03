@@ -1,5 +1,15 @@
-int thread_create(void*(start_routinue)(void*), void *arg){ 
+#include "user/thread.h"
 
+int thread_create(void*(start_routinue)(void*), void *arg){ 
+    void* stack = malloc(PGSIZE);
+    int pid = clone(stack);
+
+    if (pid == 0) {
+       start_routinue(arg);
+    }
+    else {
+        return 0;
+    }
 }
 
 int lock_init(volatile lock_t *lock){
