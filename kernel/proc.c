@@ -17,8 +17,6 @@ struct spinlock pid_lock;
 
 extern void forkret(void);
 static void freeproc(struct proc *p);
-// lab3
-//static void freeproc_thread(struct proc *p);
 
 extern char trampoline[]; // trampoline.S
 
@@ -161,6 +159,7 @@ freeproc(struct proc *p)
     kfree((void*)p->trapframe);
   p->trapframe = 0;
   if(p->pagetable) {
+    // lab3
     if(p->thread_id == 0) {
       proc_freepagetable(p->pagetable, p->sz);
     }
@@ -423,12 +422,7 @@ wait(uint64 addr)
             return -1;
           }
 
-          // if(pp->thread_id == 0) {
             freeproc(pp);
-          // }
-          // else {
-            // freeproc_thread(pp);
-          // }
 
           release(&pp->lock);
           release(&wait_lock);
@@ -748,7 +742,7 @@ found:
 
   // Parent's page table.
   p->pagetable = parent->pagetable;
-  if(mappages(p->pagetable, TRAPFRAME, PGSIZE, (uint64)(p->trapframe), PTE_R | PTE_W) < 0){ 
+  if(mappages(p->pagetable, TRAPFRAME - p->thread_id * PGSIZE, PGSIZE, (uint64)(p->trapframe), PTE_R | PTE_W) < 0){ 
     freeproc(p);
     release(&p->lock);
     return 0;
@@ -775,12 +769,6 @@ clone(void* stack)
     return -1;
   }
 
-  // Copy user memory from parent to child.
-  // if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
-  //   freeproc(np);
-  //   release(&np->lock);
-  //   return -1;
-  // }
   np->sz = p->sz;
 
   // copy saved user registers.
