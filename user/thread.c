@@ -1,5 +1,5 @@
 #include "user/thread.h"
-#include "kernel/spinlock.h"
+#include "kernel/riscv.h"
 
 int thread_create(void*(start_routinue)(void*), void *arg){ 
     void* stack = malloc(PGSIZE);
